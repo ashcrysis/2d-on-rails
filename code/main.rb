@@ -1,16 +1,20 @@
 require 'ruby2d'
 require_relative 'player'
 require_relative 'monster'
+require_relative 'slash'
+
 set width: 1000
 set height: 620
 set fps_cap:60
 set title: "what the fox say"
-#rotate no plaer.square.rotation vai servir pra mirar as armas
+
 frame_count = 0
 canHit = true
 ded_list = []
 slashes = []
 enemy_list = []
+slash_script = Slash.new
+
 =begin
 
  This Ruby function checks if two objects are touching each other based on their coordinates and
@@ -24,23 +28,6 @@ enemy_list = []
   properties `x`, `y`, `width`, and `height`. This object is likely used to determine if it is
   touching another object (`other_object`) based on their positions and dimensions.
 =end
-def slash_touching(other_object,slash)
-  if slash
-    slash.x < other_object.x + other_object.width &&
-    slash.x + slash.width > other_object.x &&
-    slash.y < other_object.y + other_object.height &&
-    slash.y + slash.height > other_object.y
-    end
-end
-
-def slash_recreate(slash,player,slashes)
-  slash.z = 20
-  slash.x = player.square.x
-  slash.y = player.square.y
-  slash.width = player.square.width
-  slashes.push(slash)
-  canHit = false
-end
 Image.new('res/scene/background.png')
 player = Player.new(
   x: 400, y: 210,
@@ -70,7 +57,7 @@ update do
         if slashes[i]
           slashes[i].remove
         end
-        if slash_touching(unnamed.sprite,slashes[i])
+        if slash_script.slash_touching(unnamed.sprite,slashes[i])
 
           unnamed.sprite.rotate += 180
           unnamed.sprite.z = 1
@@ -123,13 +110,13 @@ on :mouse_down do |event|
           canHit = false
       elsif player.facing_direction == 'right'
         slash = Image.new("res/player/slashes/slash_direita.png")
-        slash_recreate(slash,player,slashes)
+        slash_script.slash_recreate(slash,player,slashes)
       elsif player.facing_direction == 'down'
         slash = Image.new("res/player/slashes/slash_baixo.png")
-        slash_recreate(slash,player,slashes)
+        slash_script.slash_recreate(slash,player,slashes)
       elsif player.facing_direction == 'up'
         slash = Image.new("res/player/slashes/slash_cima.png")
-        slash_recreate(slash,player,slashes)
+        slash_script.slash_recreate(slash,player,slashes)
       end
     end
   end
